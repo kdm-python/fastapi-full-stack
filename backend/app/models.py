@@ -55,7 +55,16 @@ class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
 
+# Posts: new
+class PostBase(SQLModel):
+    title: str = Field(min_length=1, max_length=255)
+    content: str = Field(min_length=1, max_length=1000)
+    rating: int = Field(gt=0, lt=11)
+    username: str
 
+class Post(PostBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    
 # Shared properties
 class ItemBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
@@ -81,7 +90,6 @@ class Item(ItemBase, table=True):
     )
     owner: User | None = Relationship(back_populates="items")
 
-
 # Properties to return via API, id is always required
 class ItemPublic(ItemBase):
     id: uuid.UUID
@@ -92,17 +100,14 @@ class ItemsPublic(SQLModel):
     data: list[ItemPublic]
     count: int
 
-
 # Generic message
 class Message(SQLModel):
     message: str
-
 
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
-
 
 # Contents of JWT token
 class TokenPayload(SQLModel):
